@@ -10,7 +10,7 @@ class UsersController < ApplicationController
   # POST /users 
   def create
     @user = User.find_by(email: params[:user][:email])
-    if(@user.blank?)-
+    if(@user.blank?)
       return redirect_to root_url unless ip_ok
       @user = User.new(user_params)
       @user.total_points = 1
@@ -29,7 +29,7 @@ class UsersController < ApplicationController
 
   def ip_ok
     ip = IpAddress.where(address: request.remote_ip).first_or_create
-    if(ip.address.count > 3)
+    if((ip.count > 100))
       return false
     else
      ip.count = (ip.count += 1)
@@ -39,12 +39,12 @@ class UsersController < ApplicationController
   end
 
   def referral_register
-  	if(cookies[:u_ref])
-  	  @referred_user = User.find_by(share_token: cookies[:u_ref])
+  	if(cookies[:u_share_token])
+  	  @referred_user = User.find_by(share_token: cookies[:u_share_token])
   	  return unless @referred_user.present?
   	  @referral = @referred_user.referrals.create(referral_id: @user.id)
-      @referred_user.total_referrals =  (referred_user.total_referrals += 1)
-      @referred_user.total_points =  (referred_user.total_referrals += 10)
+      @referred_user.total_referrals =  (@referred_user.total_referrals += 1)
+      @referred_user.total_points =  (@referred_user.total_points += 10)
       @referred_user.save
   	end
   end
@@ -54,7 +54,13 @@ class UsersController < ApplicationController
     email = cookies[:u_email]
     @user = User.find_by(email: email)
     respond_to do |format|
-      if(error)
+      if(@user.present?)
+        @referrals = @user.referrals
+        @referral_count = @referrals.count
+        @point_count = @user.total_points
+        all_users = User.all.order(total_points: :desc)
+        @queue = all_users.index{ |u| u.id == @user.id }
+        @queue += 1
         format.html
       else
         cookies.delete :u_email       
@@ -66,11 +72,10 @@ class UsersController < ApplicationController
   private
   
   def user_params
-    params.require(:user_params).permit(:email)
+    params.require(:user).permit(:email)
   end
 
   def skip_first_page
-    if !Rails.application.config.ended
       email = cookies[:u_email]
       if email and !User.find_by(email: email).nil?
           redirect_to welcome_path()
@@ -78,6 +83,4 @@ class UsersController < ApplicationController
           cookies.delete :u_email
       end
     end
-  end
-
 end

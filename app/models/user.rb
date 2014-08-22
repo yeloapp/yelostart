@@ -7,11 +7,13 @@ class User < ActiveRecord::Base
   before_save :ensure_share_token
   before_validation :ensure_password
 
+  has_many :referrals
+
  private
 
  def ensure_share_token
     if share_token.blank?
-      self.auth_token = generate_share_token
+      self.share_token = generate_share_token
     end
  end
 

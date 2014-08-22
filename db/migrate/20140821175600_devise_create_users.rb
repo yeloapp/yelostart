@@ -19,8 +19,8 @@ class DeviseCreateUsers < ActiveRecord::Migration
       t.string   :current_sign_in_ip
       t.string   :last_sign_in_ip
       t.string   :share_token
-      t.integer  :total_referrals
-      t.integer  :total_points
+      t.integer  :total_referrals, default: 0
+      t.integer  :total_points, default: 0
 
       ## Confirmable
       # t.string   :confirmation_token

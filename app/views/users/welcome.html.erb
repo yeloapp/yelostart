@@ -1,0 +1,14 @@
+<h1>Refer A Friend And Get 10 Points And Jump Up The queue</h1>
+
+<p>Your Queue: <%=@queue%></p>
+<p>You Referral Count: <%=@referral_count%></p>
+<p>You Point Count: <%=@point_count%></p>
+  <% message = "Excited to be registered for yelo" %>
+  <% referral_url =  root_url+"?share_token="+CGI::escape(@user.share_token)%>
+  <p>Your referrer url <%= referral_url %></p>
+<div class="social-links">
+    <a href="http://www.facebook.com/sharer/sharer.php?u=<%= CGI::escape(root_url) %>?share_token=<%= CGI::escape(@user.share_token) %>&title=Yelo" class="fb" target="_blank">Facebook</a>
+    <div class="sep"></div>
+    <a href="http://twitter.com/share?url=<%= CGI::escape(root_url) %>?share_token=<%= CGI::escape(@user.share_token) %>&text=<%= CGI::escape(message) %>" class="twit" target="_blank">Twitter</a>
+</div>
+

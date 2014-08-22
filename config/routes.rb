@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
 
+  root to: 'users#register'
   get "/register", to: "users#register"
   post "/users", to: "users#create" 
   get "/welcome", to: "users#welcome"
