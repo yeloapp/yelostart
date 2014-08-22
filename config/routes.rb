@@ -1,9 +1,8 @@
 Rails.application.routes.draw do
 
   get "/register", to: "users#register"
-  get "/register/:share_token", to: "users#register_with_token" 
   post "/users", to: "users#create" 
-  get "/welcome", to: "public#welcome"
+  get "/welcome", to: "users#welcome"
   
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

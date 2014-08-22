@@ -1,8 +1,10 @@
 class UsersController < ApplicationController
+
+  before_action :skip_first_page, :only => :register
   
   # GET /register
   def register
-    
+    @user = User.new
   end
   
   # POST /users 
@@ -19,6 +21,7 @@ class UsersController < ApplicationController
       if(error)
         format.html { render :register }
       else
+        cookies[:u_email] = { :value => @user.email }
         format.html { redirect_to welcome_path, notice: 'Great!' }
       end
     end
@@ -36,8 +39,8 @@ class UsersController < ApplicationController
   end
 
   def referral_register
-  	if(params[:share_token].present?)
-  	  @referred_user = User.find_by(share_token: params[:share_token])
+  	if(cookies[:u_ref])
+  	  @referred_user = User.find_by(share_token: cookies[:u_ref])
   	  return unless @referred_user.present?
   	  @referral = @referred_user.referrals.create(referral_id: @user.id)
       @referred_user.total_referrals =  (referred_user.total_referrals += 1)
@@ -46,10 +49,35 @@ class UsersController < ApplicationController
   	end
   end
 
+  # GET /welcome
+  def welcome
+    email = cookies[:u_email]
+    @user = User.find_by(email: email)
+    respond_to do |format|
+      if(error)
+        format.html
+      else
+        cookies.delete :u_email       
+        format.html { redirect_to root_path, notice: 'Error' }
+      end
+    end
+  end
+
   private
   
   def user_params
     params.require(:user_params).permit(:email)
+  end
+
+  def skip_first_page
+    if !Rails.application.config.ended
+      email = cookies[:u_email]
+      if email and !User.find_by(email: email).nil?
+          redirect_to welcome_path()
+      else
+          cookies.delete :u_email
+      end
+    end
   end
 
 end
